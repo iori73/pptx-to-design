@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --bg-primary: #1a1a2e;
+      --bg-secondary: #16213e;
+      --bg-accent: #0f3460;
+      --text-primary: #eaeaea;
+      --text-secondary: #a0a0a0;
+      --accent: #e94560;
+      --accent-hover: #ff6b6b;
+      --success: #00d9a5;
+      --border: #2a2a4a;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(145deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 24px;
+    }
+    
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.02);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .drop-zone::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, var(--accent) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: var(--accent);
+      background: rgba(233, 69, 96, 0.05);
+    }
+    
+    .drop-zone:hover::before,
+    .drop-zone.drag-over::before {
+      opacity: 0.1;
+    }
+    
+    .drop-zone-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .drop-zone-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .drop-zone-text {
+      font-size: 15px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .drop-zone-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .file-input {
+      display: none;
+    }
+    
+    .file-info {
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--bg-accent);
+      border-radius: 12px;
+      display: none;
+    }
+    
+    .file-info.visible {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .file-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+    
+    .file-size {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    .import-btn {
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--accent) 0%, #d63851 100%);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: none;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .import-btn.visible {
+      display: block;
+    }
+    
+    .import-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(233, 69, 96, 0.4);
+    }
+    
+    .import-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    
+    .import-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .progress {
+      margin-top: 24px;
+      display: none;
+    }
+    
+    .progress.visible {
+      display: block;
+    }
+    
+    .progress-bar {
+      height: 6px;
+      background: var(--bg-accent);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--success) 100%);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+    
+    .progress-text {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    
+    .status {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      display: none;
+    }
+    
+    .status.visible {
+      display: block;
+    }
+    
+    .status.success {
+      background: rgba(0, 217, 165, 0.1);
+      border: 1px solid rgba(0, 217, 165, 0.3);
+      color: var(--success);
+    }
+    
+    .status.error {
+      background: rgba(233, 69, 96, 0.1);
+      border: 1px solid rgba(233, 69, 96, 0.3);
+      color: var(--accent);
+    }
+    
+    .options {
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    
+    .options-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    
+    .option-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+    
+    .option-label {
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+    
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+    }
+    
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--bg-accent);
+      border-radius: 11px;
+      transition: 0.3s;
+    }
+    
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    
+    .toggle input:checked + .toggle-slider {
+      background: var(--accent);
+    }
+    
+    .toggle input:checked + .toggle-slider::before {
+      background: white;
+      transform: translateX(18px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>PPTX → Figma</h1>
+      <p>Import PowerPoint files as editable Figma elements</p>
+    </div>
+    
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="48" height="48" rx="8" stroke="#e94560" stroke-width="2" fill="none"/>
+          <path d="M32 20V44M20 32H44" stroke="#e94560" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="drop-zone-text">Drop your .pptx file here</div>
+      <div class="drop-zone-hint">or click to browse</div>
+    </div>
+    
+    <input type="file" id="fileInput" class="file-input" accept=".pptx">
+    
+    <div class="file-info" id="fileInfo">
+      <div class="file-name" id="fileName"></div>
+      <div class="file-size" id="fileSize"></div>
+    </div>
+    
+    <div class="options">
+      <div class="options-title">Import Options</div>
+      <div class="option-item">
+        <span class="option-label">Create separate frames per slide</span>
+        <label class="toggle">
+          <input type="checkbox" id="separateFrames" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="option-item">
+        <span class="option-label">Preserve layer names</span>
+        <label class="toggle">
+          <input type="checkbox" id="preserveNames" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <button class="import-btn" id="importBtn">Import to Figma</button>
+    
+    <div class="progress" id="progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text" id="progressText">Processing...</div>
+    </div>
+    
+    <div class="status" id="status"></div>
+  </div>
+  
+  <!-- BUNDLED_JS -->
+</body>
+</html>
+

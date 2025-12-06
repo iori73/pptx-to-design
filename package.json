@@ -1,0 +1,25 @@
+{
+  "name": "pptx-to-figma",
+  "version": "1.0.0",
+  "description": "Import PowerPoint (.pptx) files into Figma as editable elements",
+  "main": "dist/code.js",
+  "scripts": {
+    "build": "npm run build:ui && npm run build:code",
+    "build:ui": "esbuild src/ui.ts --bundle --outfile=dist/ui.js && node scripts/build-ui.js",
+    "build:code": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2017",
+    "watch": "concurrently \"npm run watch:ui\" \"npm run watch:code\"",
+    "watch:ui": "esbuild src/ui.ts --bundle --outfile=dist/ui.js --watch",
+    "watch:code": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2017 --watch"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.98.0",
+    "@types/node": "^20.10.0",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.19.8",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.3.2",
+    "jszip": "^3.10.1"
+  }
+}
