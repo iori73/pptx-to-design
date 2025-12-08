@@ -1,6 +1,6 @@
 {
   "name": "PPTX to Figma",
-  "id": "pptx-to-figma-plugin",
+  "id": "1579722656902401183",
   "api": "1.0.0",
   "main": "dist/code.js",
   "ui": "dist/ui.html",
