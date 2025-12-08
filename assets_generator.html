@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plugin Assets Generator</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .canvas-container {
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h2 { margin-bottom: 10px; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Icon (128x128) -->
+    <div>
+        <h2>Icon (128x128)</h2>
+        <div class="canvas-container">
+            <canvas id="iconCanvas" width="128" height="128"></canvas>
+        </div>
+    </div>
+
+    <!-- Cover (1920x960) -->
+    <div>
+        <h2>Cover (1920x960)</h2>
+        <div class="canvas-container">
+            <canvas id="coverCanvas" width="1920" height="960"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Common Colors
+        const colors = {
+            pptx: '#D04423', // PowerPoint Orange/Red
+            figma: '#0ACF83', // Figma Green (accent)
+            bg: '#1E1E1E',    // Dark Background
+            cardBg: '#2C2C2C',
+            text: '#FFFFFF',
+            arrow: '#FFFFFF'
+        };
+
+        // Draw Icon
+        function drawIcon() {
+            const canvas = document.getElementById('iconCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Background - Dark rounded rect
+            ctx.fillStyle = '#2C2C2C'; // Slightly lighter than pure black
+            roundRect(ctx, 0, 0, w, h, 24);
+            ctx.fill();
+
+            // P Symbol (Left, Orange)
+            ctx.fillStyle = colors.pptx;
+            ctx.font = 'bold 64px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('P', w * 0.35, h * 0.55);
+
+            // Arrow (Center)
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(w * 0.55, h * 0.5);
+            ctx.lineTo(w * 0.75, h * 0.5);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(w * 0.65, h * 0.4);
+            ctx.lineTo(w * 0.75, h * 0.5);
+            ctx.lineTo(w * 0.65, h * 0.6);
+            ctx.stroke();
+        }
+
+        // Draw Cover
+        function drawCover() {
+            const canvas = document.getElementById('coverCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Background Gradient
+            const gradient = ctx.createLinearGradient(0, 0, w, h);
+            gradient.addColorStop(0, '#1E1E1E');
+            gradient.addColorStop(1, '#121212');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, w, h);
+
+            // --- Left Side: PowerPoint Visual ---
+            // PPTX Card
+            const cardW = 500;
+            const cardH = 350;
+            const centerX = w / 2;
+            const centerY = h / 2;
+            
+            // Shadow
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 40;
+            ctx.shadowOffsetY = 20;
+
+            // PPTX File (Left)
+            const pptxX = centerX - 450;
+            const pptxY = centerY - cardH/2;
+            
+            ctx.fillStyle = '#FFFFFF';
+            roundRect(ctx, pptxX, pptxY, cardW, cardH, 16);
+            ctx.fill();
+            ctx.shadowColor = 'transparent'; // Reset shadow
+
+            // PPTX Header
+            ctx.fillStyle = colors.pptx;
+            ctx.beginPath();
+            ctx.roundRect(pptxX, pptxY, cardW, 60, [16, 16, 0, 0]);
+            ctx.fill();
+
+            // PPTX Content (Abstract)
+            ctx.fillStyle = '#E0E0E0';
+            // Title
+            ctx.fillRect(pptxX + 40, pptxY + 100, 300, 30);
+            // Bullets
+            ctx.fillRect(pptxX + 40, pptxY + 160, 20, 20);
+            ctx.fillRect(pptxX + 80, pptxY + 160, 380, 20);
+            ctx.fillRect(pptxX + 40, pptxY + 200, 20, 20);
+            ctx.fillRect(pptxX + 80, pptxY + 200, 350, 20);
+            // Chart/Image
+            ctx.fillStyle = '#D0D0D0';
+            ctx.fillRect(pptxX + 40, pptxY + 250, 180, 70);
+            ctx.fillStyle = colors.pptx;
+            ctx.globalAlpha = 0.2;
+            ctx.fillRect(pptxX + 40, pptxY + 250, 180, 70);
+            ctx.globalAlpha = 1.0;
+
+            // PPTX Label
+            ctx.fillStyle = colors.pptx;
+            ctx.font = 'bold 32px Inter';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('.pptx', pptxX + 20, pptxY + 30);
+
+
+            // --- Right Side: Figma Visual ---
+            // Figma Card
+            const figX = centerX + 50;
+            const figY = centerY - cardH/2;
+
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 40;
+            ctx.shadowOffsetY = 20;
+
+            // Figma Frame
+            ctx.fillStyle = '#1E1E1E'; // Dark UI
+            ctx.strokeStyle = '#0ACF83'; // Selection border
+            ctx.lineWidth = 4;
+            roundRect(ctx, figX, figY, cardW, cardH, 16);
+            ctx.fill();
+            ctx.stroke();
+            ctx.shadowColor = 'transparent';
+
+            // Figma Header (Selection Label)
+            ctx.fillStyle = '#0ACF83';
+            ctx.font = '14px Inter';
+            ctx.fillText('Frame 1', figX + 10, figY - 15);
+
+            // Figma Content (Matching PPTX but Editable style)
+            // Title
+            ctx.strokeStyle = '#4DA6FF'; // Selection highlight
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 24px Inter';
+            ctx.fillText('Quarterly Plan', figX + 40, figY + 125);
+            ctx.strokeRect(figX + 38, figY + 100, 304, 34); // Bounding box
+
+            // Elements
+            ctx.fillStyle = '#CCCCCC';
+            ctx.fillText('• Market Analysis', figX + 80, figY + 178);
+            ctx.fillText('• Growth Strategy', figX + 80, figY + 218);
+            
+            // Vector nodes (corner handles)
+            drawHandle(ctx, figX + 38, figY + 100);
+            drawHandle(ctx, figX + 38 + 304, figY + 100);
+            drawHandle(ctx, figX + 38 + 304, figY + 134);
+            drawHandle(ctx, figX + 38, figY + 134);
+
+
+            // --- Center: Arrow ---
+            const arrowX = centerX;
+            const arrowY = centerY;
+            
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(arrowX, arrowY, 40, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Arrow Icon
+            ctx.strokeStyle = '#1E1E1E';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(arrowX - 15, arrowY);
+            ctx.lineTo(arrowX + 15, arrowY);
+            ctx.moveTo(arrowX + 5, arrowY - 10);
+            ctx.lineTo(arrowX + 15, arrowY);
+            ctx.lineTo(arrowX + 5, arrowY + 10);
+            ctx.stroke();
+
+
+            // --- Title Text ---
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '800 72px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 20;
+            ctx.fillText('PPTX to Figma', centerX, 200);
+            
+            ctx.font = '400 32px Inter';
+            ctx.fillStyle = '#AAAAAA';
+            ctx.fillText('Convert slides to editable layers instantly', centerX, 260);
+            ctx.shadowColor = 'transparent';
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+
+        function drawHandle(ctx, x, y) {
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = '#4DA6FF';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.rect(x - 3, y - 3, 6, 6);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Initialize
+        window.onload = () => {
+            drawIcon();
+            drawCover();
+        };
+    </script>
+</body>
+</html>
+
